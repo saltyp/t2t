@@ -1,5 +1,28 @@
 import { useState } from "react";
 
+function Game() {
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [xIsNext, setXIsNext] = useState(true);
+  const currentSquares = history[history.length - 1];
+
+  function handlePlay(nextSquares) {
+    setHistory([...history, nextSquares]);
+    setXIsNext(!xIsNext);
+  }
+
+  return (
+    <div className="game">
+        <div className="game-board">
+            <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay}/>
+        </div>
+        <div className="game-info">
+            <ol>{/* TODO */}</ol>
+        </div>
+    </div>
+  );
+}
+
+
 
 function Square({squareNumber, value, onSquareClick}) {
   function handleClick() {
@@ -12,17 +35,11 @@ function Square({squareNumber, value, onSquareClick}) {
   );
 }
 
-function Board() {
+function Board({xIsNext, squares, onPlay}) {
     /* 
     TODO: refactor to use loops instead of hardcoding
     Representation of board : an Array of squares, each of which has a key, value and arrow function to handle click 
-    */ 
-    const numSquaresInRow = 3;
-    const numRows = 3;
-
-    const [xIsNext, setXIsNext] = useState(true);
-    const [squares, setSquares] = useState(Array(numSquaresInRow*numRows).fill(null));
-    
+    */     
     function onSquareClick(i) {
       if (squares[i] || calculateWinner(squares)) {
         return; 
@@ -33,10 +50,8 @@ function Board() {
       } else {
           nextSquares[i] = 'O';
       }
-      setSquares(nextSquares);
-      setXIsNext(!xIsNext);
+      onPlay(nextSquares);
     }
-
 
     // let squares = [];
     // for (let j = 0; j < numRows; j++) { 
@@ -81,8 +96,6 @@ function Board() {
   );
 }
 
-export default Board;
-
 function calculateWinner(squares) {
   const winningLines = [
     [0, 1, 2], // top row
@@ -103,3 +116,5 @@ function calculateWinner(squares) {
   }
   return null;
 }
+
+export default Game;
