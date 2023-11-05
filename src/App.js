@@ -1,7 +1,10 @@
 
 function Square({ value}) {
+  function handleClick() {
+    console.log('clicked square ' + value + '!');
+  } 
   return (
-    <button className="square">{value}</button>
+    <button className="square" onClick={handleClick}>{value}</button>
   );
 }
 
