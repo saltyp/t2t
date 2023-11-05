@@ -22,16 +22,23 @@ function Game() {
 
   const moves = history.map((step, move) => { 
     let description;
-    if (move>0) {
+    if (move === currentMove) {
+      description = 'You are at move #' + move;
+    } else if (move>0) {
       description = 'Go to move #' + move;
     } else {
       description = 'Go to game start';
     }
-    return (
-      <li key={move}>
-        <button onClick={() => jumpTo(move)}>{description}</button>
-      </li>
-    );
+
+    if (move === currentMove) {
+      return ( <li key= {move}> {description} </li> );
+    } else {
+      return (
+        <li key={move}>
+          <button onClick={() => jumpTo(move)}>{description}</button>
+        </li>
+      );
+    }
   });
 
   return (
@@ -66,7 +73,6 @@ function Board({xIsNext, squares, onPlay}) {
       /* 
       can't reclick a square nor click if there is a winner
       */
-
       if (squares[i] || calculateWinner(squares)) {
         return; 
       }
@@ -79,15 +85,6 @@ function Board({xIsNext, squares, onPlay}) {
       onPlay(nextSquares);
     }
 
-    // let squares = [];
-    // for (let j = 0; j < numRows; j++) { 
-    //   let squareRow = [];
-    //   for (let i = 0; i < numSquaresInRow; i++) {
-    //     squareRow.push(<Square key={numSquaresInRow*j+i} squareNumber={numSquaresInRow*j+i} value={squares[numSquaresInRow*j+i]} onSquareClick={onSquareClick}/>);
-    //   }
-    //   squares.push(<div className="board-row" key={j}>{squareRow}</div>);
-    // }
-
   const winner = calculateWinner(squares);
   let status;
   if (winner) {
@@ -99,6 +96,15 @@ function Board({xIsNext, squares, onPlay}) {
       status = 'Next player: ' + (xIsNext ? 'X' : 'O');
     }
   }
+
+    // let squares = [];
+    // for (let j = 0; j < numRows; j++) { 
+    //   let squareRow = [];
+    //   for (let i = 0; i < numSquaresInRow; i++) {
+    //     squareRow.push(<Square key={numSquaresInRow*j+i} squareNumber={numSquaresInRow*j+i} value={squares[numSquaresInRow*j+i]} onSquareClick={onSquareClick}/>);
+    //   }
+    //   squares.push(<div className="board-row" key={j}>{squareRow}</div>);
+    // }
     
   return (
     <>
