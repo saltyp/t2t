@@ -5,21 +5,19 @@ function Game() {
   Game is represented as history of moves, each of which is an array of 9 squares
   */
   const [history, setHistory] = useState([Array(9).fill(null)]);
-  const [xIsNext, setXIsNext] = useState(true);
   const [currentMove, setCurrentMove] = useState(0);
+  const xIsNext = (currentMove % 2) === 0;
   const currentSquares = history[currentMove];
 
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove+1), nextSquares];
     setHistory(nextHistory);
     setCurrentMove(nextHistory.length - 1)
-    setXIsNext(!xIsNext);
   }
 
   function jumpTo(nextMove) {
     // TODO 
     setCurrentMove(nextMove);
-    setXIsNext((nextMove % 2) === 0);
   }
 
   const moves = history.map((step, move) => { 
