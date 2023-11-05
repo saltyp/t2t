@@ -1,7 +1,12 @@
+import { useState } from "react";
 
-function Square({ value}) {
+
+function Square({squareNumber}) {
+  const [value, setValue] = useState(null);
+
   function handleClick() {
-    console.log('clicked square ' + value + '!');
+    console.log('clicked square ' + squareNumber + '!');
+    setValue('X');
   } 
   return (
     <button className="square" onClick={handleClick}>{value}</button>
@@ -16,7 +21,7 @@ function Board() {
     for (let j = 0; j < numRows; j++) { 
       let squareRow = [];
       for (let i = 0; i < numSquaresInRow; i++) {
-        squareRow.push(<Square key={numSquaresInRow*j+i} value={numSquaresInRow*j+i} />);
+        squareRow.push(<Square key={numSquaresInRow*j+i} squareNumber={numSquaresInRow*j+i}/>);
       }
       squares.push(<div className="board-row" key={j}>{squareRow}</div>);
     }
