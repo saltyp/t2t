@@ -24,8 +24,8 @@ function Board() {
     const [squares, setSquares] = useState(Array(numSquaresInRow*numRows).fill(null));
     
     function onSquareClick(i) {
-      if (squares[i]) {
-        return;
+      if (squares[i] || calculateWinner(squares)) {
+        return; 
       }
       const nextSquares = squares.slice(); // copies entire array
       if (xIsNext) {
@@ -46,9 +46,22 @@ function Board() {
     //   }
     //   squares.push(<div className="board-row" key={j}>{squareRow}</div>);
     // }
+
+  const winner = calculateWinner(squares);
+  let status;
+  if (winner) {
+    status = 'Winner: ' + winner;
+  } else {
+    if (squares.every((square) => square !== null)) {
+      status = 'Draw!';
+    } else {
+      status = 'Next player: ' + (xIsNext ? 'X' : 'O');
+    }
+  }
     
   return (
     <>
+      <div className="status"> {status} </div>
       <div className="board-row">
         <Square key={0} squareNumber={0} value={squares[0]} onSquareClick={() => onSquareClick(0)}/>
         <Square key={1} squareNumber={1} value={squares[1]} onSquareClick={() => onSquareClick(1)}/>
@@ -70,3 +83,23 @@ function Board() {
 
 export default Board;
 
+function calculateWinner(squares) {
+  const winningLines = [
+    [0, 1, 2], // top row
+    [3, 4, 5], // middle row 
+    [6, 7, 8], // bottom row
+    [0, 3, 6], // left column
+    [1, 4, 7], // middle column 
+    [2, 5, 8], // right column
+    [0, 4, 8], // diagonal top left to bottom right
+    [2, 4, 6], // diagonal top right to bottom left
+  ];
+  for (let i = 0; i < winningLines.length; i++) {
+    const [a, b, c] = winningLines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      // return the winner
+      return squares[a];
+    }
+  }
+  return null;
+}
