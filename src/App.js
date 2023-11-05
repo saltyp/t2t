@@ -6,25 +6,24 @@ function Square({ value}) {
 }
 
 function Board() {
+    const numSquaresInRow = 3;
+    const numRows = 3;
+    
+    let squares = [];
+    for (let j = 0; j < numRows; j++) { 
+      let squareRow = [];
+      for (let i = 0; i < numSquaresInRow; i++) {
+        squareRow.push(<Square key={numSquaresInRow*j+i} value={numSquaresInRow*j+i} />);
+      }
+      squares.push(<div className="board-row" key={j}>{squareRow}</div>);
+    }
+    
   return (
-    <>  
-      <div className="board-row">
-        <Square value = {1} />
-        <Square />
-        <Square />
-      </div>
-      <div className="board-row">
-        <Square />
-        <Square />
-        <Square />  
-      </div>
-      <div className="board-row">
-        <Square />
-        <Square />
-        <Square />  
-      </div>
-    </> 
-  )
+    <div>
+      {squares}
+    </div>
+  );
 }
 
 export default Board;
+
