@@ -8,6 +8,7 @@ function Game() {
   const [currentMove, setCurrentMove] = useState(0);
   const xIsNext = (currentMove % 2) === 0;
   const currentSquares = history[currentMove];
+  const [isAsc, setAscDesc] = useState(true)
 
   function handlePlay(nextSquares) {
     const nextHistory = [...history.slice(0, currentMove+1), nextSquares];
@@ -46,8 +47,13 @@ function Game() {
         <div className="game-board">
             <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay}/>
         </div>
+        
         <div className="game-info">
-            <ol>{moves}</ol>
+          <div>
+            <div className="history-title"> Move history </div>
+            <button onClick={() => setAscDesc(!isAsc)}> Sort asc/desc </button>
+          </div>
+          <ol>{isAsc? moves : moves.reverse()}</ol>
         </div>
     </div>
   );
