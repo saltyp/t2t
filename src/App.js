@@ -49,8 +49,8 @@ function Game() {
         </div>
         
         <div className="game-info">
-          <div>
-            <div className="history-title"> Move history </div>
+          <div className="history-title">
+            <div> Move history </div>
             <button onClick={() => setAscDesc(!isAsc)}> Sort asc/desc </button>
           </div>
           <ol>{isAsc? moves : moves.reverse()}</ol>
