@@ -4,7 +4,10 @@ function Game() {
   /*
   Game is represented as history of moves, each of which is an array of 9 squares
   */
-  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const numrows = 4;
+  const numcols = 4;
+  const numsquares = numrows * numcols;
+  const [history, setHistory] = useState([Array(numsquares).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
   const xIsNext = (currentMove % 2) === 0;
   const currentSquares = history[currentMove];
@@ -17,7 +20,6 @@ function Game() {
   }
 
   function jumpTo(nextMove) {
-    // TODO 
     setCurrentMove(nextMove);
   }
 
@@ -45,7 +47,7 @@ function Game() {
   return (
     <div className="game">
         <div className="game-board">
-            <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay}/>
+            <Board numrows={numrows} xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay}/>
         </div>
         
         <div className="game-info">
@@ -70,16 +72,15 @@ function Square({squareNumber, value, onSquareClick}) {
   );
 }
 
-function Board({xIsNext, squares, onPlay}) {
+function Board({numrows, xIsNext, squares, onPlay}) {
     /* 
-    TODO: refactor to use loops instead of hardcoding
     Representation of board : an Array of squares, each of which has a key, value and arrow function to handle click 
     */     
     function onSquareClick(i) {
       /* 
       can't reclick a square nor click if there is a winner
       */
-      if (squares[i] || calculateWinner(squares)) {
+      if (squares[i] || calculateWinner(numrows, squares)) {
         return; 
       }
       const nextSquares = squares.slice(); // copies entire array
@@ -91,7 +92,7 @@ function Board({xIsNext, squares, onPlay}) {
       onPlay(nextSquares);
     }
 
-  const winner = calculateWinner(squares);
+  const winner = calculateWinner(numrows, squares);
   let status;
   if (winner) {
     status = 'Winner: ' + winner;
@@ -102,15 +103,17 @@ function Board({xIsNext, squares, onPlay}) {
       status = 'Next player: ' + (xIsNext ? 'X' : 'O');
     }
   }
+  const rowIndices = [...Array(numrows).keys()];
+  const numcols = squares.length / numrows;
  
   return (
     <>
       <div className="status"> {status} </div>
-      {[0,1,2].map((rowIndex) => (
+      {rowIndices.map((rowIndex) => (
         <div className="board-row" key={rowIndex}>
-          {squares.slice(rowIndex*3, rowIndex*3+3).map((square, colIndex) => (
-            <Square key={rowIndex*3+colIndex} value={square} squareNumber={rowIndex*3+colIndex} 
-                  onSquareClick={() => onSquareClick(rowIndex*3+colIndex)}/>
+          {squares.slice(rowIndex*numcols, rowIndex*numcols+numcols).map((square, colIndex) => (
+            <Square key={rowIndex*numcols+colIndex} value={square} squareNumber={rowIndex*numcols+colIndex} 
+                  onSquareClick={() => onSquareClick(rowIndex*numcols+colIndex)}/>
           ))}
         </div>
       ))}
@@ -118,22 +121,34 @@ function Board({xIsNext, squares, onPlay}) {
   );
 }
 
-function calculateWinner(squares) {
-  const winningLines = [
-    [0, 1, 2], // top row
-    [3, 4, 5], // middle row 
-    [6, 7, 8], // bottom row
-    [0, 3, 6], // left column
-    [1, 4, 7], // middle column 
-    [2, 5, 8], // right column
-    [0, 4, 8], // diagonal top left to bottom right
-    [2, 4, 6], // diagonal top right to bottom left
-  ];
+function calculateWinner(numrows, squares) {
+  const numcols = squares.length / numrows;
+  const winningLines = [];
+  // horizontal and vertical wins
+  for (let i = 0; i < numrows; i++) {
+    const row = [];
+    const col = [];
+    for (let j = 0; j < numcols; j++) {
+      row.push(i*numcols+j);
+      col.push(i+j*numcols);
+    }
+    winningLines.push(row);
+    winningLines.push(col);
+  } 
+  // diagonal wins
+  const diag1 = [];
+  const diag2 = [];
+  for (let i = 0; i < numrows; i++) {
+    diag1.push(i*numcols+i);
+    diag2.push(i*numcols+(numcols-i-1));
+  }
+  winningLines.push(diag1);
+  winningLines.push(diag2);
+
   for (let i = 0; i < winningLines.length; i++) {
-    const [a, b, c] = winningLines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      // return the winner
-      return squares[a];
+    const thisWinningCombo = winningLines[i];
+    if (thisWinningCombo.every((index) => squares[index] === squares[thisWinningCombo[0]]) ) {
+      return squares[thisWinningCombo[0]];
     }
   }
   return null;
