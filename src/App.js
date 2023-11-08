@@ -4,8 +4,8 @@ function Game() {
   /*
   Game is represented as history of moves, each of which is an array of 9 squares
   */
-  const numrows = 4;
-  const numcols = 4;
+  const numrows = 3;
+  const numcols = 3;
   const numsquares = numrows * numcols;
   const [history, setHistory] = useState([Array(numsquares).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
@@ -61,14 +61,15 @@ function Game() {
   );
 }
 
-function Square({squareNumber, value, onSquareClick}) {
-  function handleClick() {
-    console.log('clicked square ' + squareNumber + '!');
-  } 
+function Square({squareNumber, value, onSquareClick, winner}) {
+  // function handleClick() {
+  //   console.log('clicked square ' + squareNumber + '!');
+  // } 
   return (
-    <button className="square" onClick={onSquareClick}>
-      {value}
-    </button>
+    winner ? 
+    <button className="winning-square" onClick={onSquareClick}> {value} </button>
+    :
+    <button className="square" onClick={onSquareClick}> {value} </button>
   );
 }
 
@@ -80,7 +81,7 @@ function Board({numrows, xIsNext, squares, onPlay}) {
       /* 
       can't reclick a square nor click if there is a winner
       */
-      if (squares[i] || calculateWinner(numrows, squares)) {
+      if (squares[i] || calculateWinner(numrows, squares)[0]) {
         return; 
       }
       const nextSquares = squares.slice(); // copies entire array
@@ -90,9 +91,10 @@ function Board({numrows, xIsNext, squares, onPlay}) {
           nextSquares[i] = 'O';
       }
       onPlay(nextSquares);
+      console.log('clicked square ' + i + '!')
     }
 
-  const winner = calculateWinner(numrows, squares);
+  const [winner, WinningSquares] = calculateWinner(numrows, squares);
   let status;
   if (winner) {
     status = 'Winner: ' + winner;
@@ -113,7 +115,8 @@ function Board({numrows, xIsNext, squares, onPlay}) {
         <div className="board-row" key={rowIndex}>
           {squares.slice(rowIndex*numcols, rowIndex*numcols+numcols).map((square, colIndex) => (
             <Square key={rowIndex*numcols+colIndex} value={square} squareNumber={rowIndex*numcols+colIndex} 
-                  onSquareClick={() => onSquareClick(rowIndex*numcols+colIndex)}/>
+                  onSquareClick={() => onSquareClick(rowIndex*numcols+colIndex)} 
+                  winner={winner ? ( WinningSquares.includes((rowIndex*numcols+colIndex)) ? true : false) : false  }/>
           ))}
         </div>
       ))}
@@ -148,10 +151,10 @@ function calculateWinner(numrows, squares) {
   for (let i = 0; i < winningLines.length; i++) {
     const thisWinningCombo = winningLines[i];
     if (thisWinningCombo.every((index) => squares[index] === squares[thisWinningCombo[0]]) ) {
-      return squares[thisWinningCombo[0]];
+      return [squares[thisWinningCombo[0]], thisWinningCombo];
     }
   }
-  return null;
+  return [null,null];
 }
 
 export default Game;
